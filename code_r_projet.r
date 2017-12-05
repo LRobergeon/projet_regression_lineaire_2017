@@ -10,7 +10,8 @@ library(pls)
 library(prospectr)
 
 train_data = read.table("data_groupe9.csv", header=TRUE,sep = ";")
-
+train_data =  read.table("essai.csv", header=TRUE,sep = ";")
+y = cbind(train_data[,2])
 colonnes = colnames(train_data)
 stepall = length(colonnes)
 
@@ -55,9 +56,7 @@ stepall_modified = length(colonnes_modified)
 train_data_modified = data.frame(train_data_modified)
 essai = data.frame(train_data_modified[,12]) + data.frame(train_data_modified[,34])
 
-
 cd = c()
-
 for (x1 in 1:(stepall-3)){
   for (x2 in (x1+1):(stepall-2)){
     for (x3 in (x2+1):stepall-1){
@@ -83,7 +82,7 @@ for (x1 in 1:(stepall-3)){
       for (x in X3){
         X3_2 = c(X2_2, x*x)
         }
-      X3_2 = cbind(X3_2)
+      X3_2 = cbind(X3_2[1:25])
 
       X2X3 = c()
 	  for (i in 1:length(X2)) {
@@ -103,12 +102,11 @@ for (x1 in 1:(stepall-3)){
 	  }
 	  X1X3 = cbind(X1X3)
 
-      reg = lm( X1 ~ X2 + X3 + X1_2 + X2_2 + X3_2 + X2X3 + X2X1 + X1X3)
+      reg = lm( y ~ X1 + X2 + X3 + X1_2 + X2_2 + X3_2 + X2X1 + X1X3 + X2X3 )
 
       coefficient_determination = summary(reg)$r.squared 
       cd  = c(cd,coefficient_determination)
 	  }
       
-    }}
-
-      
+  }}
+cd = sort(cd,decreasing = TRUE)
