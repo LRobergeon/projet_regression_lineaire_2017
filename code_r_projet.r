@@ -184,3 +184,17 @@ if (length(liste_indice_a_enlever_etape_2) > 0){
       print(colonnes_modified[i])
     }
     
+    
+    
+essai_AIC = step(object = lm(y_test ~., 
+                                 data = test_data_modified), 
+                     direction='backward', 
+                     scope=list(upper= ~ ., lower=~1),
+                     k = 2)
+    
+essai_BIC = step(object = lm(y_test ~., 
+                             data = test_data_modified), 
+                 direction='backward', 
+                 scope=list(upper= ~ ., lower=~1),
+                 k = log(40))
+    
