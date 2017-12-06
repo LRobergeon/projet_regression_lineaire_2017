@@ -10,79 +10,60 @@ library(pls)
 library(prospectr)
 
 train_data = read.table("data_groupe9.csv", header=TRUE,sep = ";")
-train_data =  read.table("essai.csv", header=TRUE,sep = ";")
-y = cbind(train_data[,2])
+test_data =  read.table("essai.csv", header=TRUE,sep = ";")
+y_test = cbind(train_data[,2])
+test_data = test_data[, - c(1,2)]
+train_data = train_data[ , - c(1)]
 colonnes = colnames(train_data)
+colonnes_train = colnames(test_data)
 stepall = length(colonnes)
 
-"""
+
 cd = c()
 pred_ok = c()
+liste_indice_a_enlever = c()
 for (x1 in 1:(stepall-3)){
   for (x2 in (x1+1):(stepall-2)){
     for (x3 in (x2+1):stepall-1){
-      for (x4 in (x3+1):stepall){
         ## print(train_data[colonne1])
         X1 = cbind(train_data[,x1])
         X2 = cbind(train_data[,x2])
         X3 = cbind(train_data[,x3])
-        X4 = cbind(train_data[,x3])
+
         
-        reg = lm(X1~X2 + X3 + X4)
+        reg = lm(X1~X2 + X3)
         coefficient_determination = summary(reg)$r.squared 
         cd  = c(cd,coefficient_determination)
         
-        if (coefficient_determination > 0.95) {
-          print(colonnes[x1])
-          print(colonnes[x2])
-          print(colonnes[x3])
-          print(colonnes[x4])
-          
-          pred_ok = c(pred_ok,c(colonnes[x1],colonnes[x2],colonnes[x3],colonnes[x4]))
-        }
+        if (coefficient_determination > 0.85) {
+          pred_ok = c(pred_ok,c(colonnes[x1],colonnes[x2],colonnes[x3]))
+          if ( !(x1 %in% liste_indice_a_enlever)){
+              liste_indice_a_enlever = c(liste_indice_a_enlever, x1)
+          }
+          }
       }
     }
   }
-}
-"""
-
-liste_indice_a_enlever = c(1,12,34,45)
 
 
+
+
+if (length(liste_indice_a_enlever) )
 train_data_modified = train_data[ , - liste_indice_a_enlever]
-colonnes_modified = colnames(train_data_modified)
+test_data_modified = test_data[ , - liste_indice_a_enlever]
+
+colonnes_modified = colnames(test_data_modified)
 stepall_modified = length(colonnes_modified)
 
 train_data_modified = data.frame(train_data_modified)
-essai = data.frame(train_data_modified[,12]) + data.frame(train_data_modified[,34])
 
 cd = c()
 for (x1 in 1:(stepall-3)){
   for (x2 in (x1+1):(stepall-2)){
     for (x3 in (x2+1):stepall-1){
-      X1 = cbind(train_data[,x1])
-      X2 = cbind(train_data[,x2])
-      X3 = cbind(train_data[,x3])
-
-      X1_2 = c()
-      for (x in X1){
-        X1_2 = c(X1_2, x*x)
-      }
-      X1_2 = cbind(X1_2)
-
-
-      X2_2 = c()
-      for (x in X2){
-        X2_2 = c(X2_2, x*x)
-      }
-      X2_2 = cbind(X2_2)
-
-
-      X3_2 = c()
-      for (x in X3){
-        X3_2 = c(X2_2, x*x)
-        }
-      X3_2 = cbind(X3_2[1:25])
+      X1 = cbind(test_data_modified[,x1])
+      X2 = cbind(test_data_modified[,x2])
+      X3 = cbind(test_data_modified[,x3])
 
       X2X3 = c()
 	  for (i in 1:length(X2)) {
@@ -102,7 +83,7 @@ for (x1 in 1:(stepall-3)){
 	  }
 	  X1X3 = cbind(X1X3)
 
-      reg = lm( y ~ X1 + X2 + X3 + X1_2 + X2_2 + X3_2 + X2X1 + X1X3 + X2X3 )
+      reg = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
 
       coefficient_determination = summary(reg)$r.squared 
       cd  = c(cd,coefficient_determination)
@@ -110,3 +91,4 @@ for (x1 in 1:(stepall-3)){
       
   }}
 cd = sort(cd,decreasing = TRUE)
+hist(cd)
