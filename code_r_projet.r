@@ -11,7 +11,7 @@ library(prospectr)
 
 train_data = read.table("data_groupe9.csv", header=TRUE,sep = ";")
 test_data =  read.table("essai.csv", header=TRUE,sep = ";")
-y_test = cbind(train_data[,2])
+y_test = cbind(test_data[,2])
 test_data = test_data[, - c(1,2)]
 train_data = train_data[ , - c(1)]
 colonnes = colnames(train_data)
@@ -55,12 +55,12 @@ test_data_modified = test_data[ , - liste_indice_a_enlever]
 colonnes_modified = colnames(test_data_modified)
 stepall_modified = length(colonnes_modified)
 
-train_data_modified = data.frame(train_data_modified)
+### train_data_modified = data.frame(train_data_modified)
 
 cd = c()
-for (x1 in 1:(stepall-3)){
-  for (x2 in (x1+1):(stepall-2)){
-    for (x3 in (x2+1):stepall-1){
+for (x1 in 1:(stepall_modified-3)){
+  for (x2 in (x1+1):(stepall_modified-2)){
+    for (x3 in (x2+1):stepall_modified-1){
       X1 = cbind(test_data_modified[,x1])
       X2 = cbind(test_data_modified[,x2])
       X3 = cbind(test_data_modified[,x3])
