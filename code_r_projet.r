@@ -138,54 +138,62 @@ if (length(liste_indice_a_enlever_etape_2) > 0){
     colonnes_modified = colnames(test_data_modified)
     stepall_modified = length(colonnes_modified)
   }
-    cd = c()
-    max_r_squared = 0
-    regresseurs = c(1,2,3)
-    for (x1 in 1:(stepall_modified-2)){
-      for (x2 in (x1+1):(stepall_modified-1)){
-        for (x3 in (x2+1):stepall_modified){
-          X1 = cbind(test_data_modified[,x1])
-          X2 = cbind(test_data_modified[,x2])
-          X3 = cbind(test_data_modified[,x3])
-          
-          X2X3 = c()
-          for (i in 1:length(X2)) {
-            X2X3 = c(X2X3, X2[i,1]*X3[i,1])
-          }
-          X2X3 = cbind(X2X3)
-          
-          X2X1 = c()
-          for (i in 1:length(X2)) {
-            X2X1 = c(X2X1, X2[i,1]*X1[i,1])
-          }
-          X2X1 = cbind(X2X1)
-          
-          X1X3 = c()
-          for (i in 1:length(X2)) {
-            X1X3 = c(X1X3, X1[i,1]*X3[i,1])
-          }
-          X1X3 = cbind(X1X3)
-          
-          reg = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
-          
-          coefficient_determination = summary(reg)$r.squared 
-          if (coefficient_determination > max_r_squared) {
-            regression_meilleure = reg
-            max_r_squared <- coefficient_determination
-            regresseurs = c(x1,x2,x3)
-          }
-          cd  = c(cd,coefficient_determination)
-        }
-        
-      }}
-    cd = sort(cd,decreasing = TRUE)
-    hist(cd)
-    for (i in regresseurs){
-      print(colonnes_modified[i])
+cd = c()
+max_r_squared = 0
+regresseurs = c(1,2,3)
+min_mean = 1000000
+for (x1 in 1:(stepall_modified-2)){
+  for (x2 in (x1+1):(stepall_modified-1)){
+    for (x3 in (x2+1):stepall_modified){
+      X1 = cbind(test_data_modified[,x1])
+      X2 = cbind(test_data_modified[,x2])
+      X3 = cbind(test_data_modified[,x3])
+      
+      X2X3 = c()
+      for (i in 1:length(X2)) {
+        X2X3 = c(X2X3, X2[i,1]*X3[i,1])
+      }
+      X2X3 = cbind(X2X3)
+      
+      X2X1 = c()
+      for (i in 1:length(X2)) {
+        X2X1 = c(X2X1, X2[i,1]*X1[i,1])
+      }
+      X2X1 = cbind(X2X1)
+      
+      X1X3 = c()
+      for (i in 1:length(X2)) {
+        X1X3 = c(X1X3, X1[i,1]*X3[i,1])
+      }
+      X1X3 = cbind(X1X3)
+      
+      reg = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
+      modselect=stepAIC(reg,~.,trace=FALSE,
+                        direction=c("both")) 
+      regresseurs = modselect$terms
+      moyenne_residus = mean((predict(modselect)-y_test)**2)
+      coefficient_determination = summary(modselect)$r.squared 
+      if (coefficient_determination > max_r_squared) {
+        regression_meilleure = modselect
+        max_r_squared <- coefficient_determination
+      }
+      if (moyenne_residus < min_mean){
+        reg_min = modselect
+        min_mean = moyenne_residus
+      }
+      cd  = c(cd,coefficient_determination)
     }
     
-    
-    
+  }}
+cd = sort(cd,decreasing = TRUE)
+hist(cd)
+for (i in regresseurs){
+  print(colonnes_modified[i])
+}
+
+
+
+"""
 essai_AIC = step(object = lm(y_test ~., 
                                  data = test_data_modified), 
                      direction='backward', 
@@ -197,4 +205,4 @@ essai_BIC = step(object = lm(y_test ~.,
                  direction='backward', 
                  scope=list(upper= ~ ., lower=~1),
                  k = log(40))
-    
+"""
