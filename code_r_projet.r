@@ -8,6 +8,18 @@ exit <- function() {
 # Chargement de la librairie
 library(pls)
 library(prospectr)
+library(MASS)
+
+multiplier_deux_cbinds <- function(X,Y)
+{result = c()
+for (i in 1:length(X)) {
+  result = c(result, X[i,1]*Y[i,1])
+}
+result = cbind(result)
+return(result)
+}
+
+
 
 train_data = read.table("data_groupe9.csv", header=TRUE,sep = ";")
 test_data =  read.table("essai.csv", header=TRUE,sep = ";")
@@ -138,10 +150,14 @@ if (length(liste_indice_a_enlever_etape_2) > 0){
     colonnes_modified = colnames(test_data_modified)
     stepall_modified = length(colonnes_modified)
   }
+  
+  
+### L2
 cd = c()
 max_r_squared = 0
-regresseurs = c(1,2,3)
-min_mean = 1000000
+regresseurs_L2 = c(1,2,3)
+L2 = 1000000000000
+L1 = 1000000000000
 for (x1 in 1:(stepall_modified-2)){
   for (x2 in (x1+1):(stepall_modified-1)){
     for (x3 in (x2+1):stepall_modified){
@@ -149,60 +165,58 @@ for (x1 in 1:(stepall_modified-2)){
       X2 = cbind(test_data_modified[,x2])
       X3 = cbind(test_data_modified[,x3])
       
-      X2X3 = c()
-      for (i in 1:length(X2)) {
-        X2X3 = c(X2X3, X2[i,1]*X3[i,1])
-      }
-      X2X3 = cbind(X2X3)
+      X2X3 = multiplier_deux_cbinds(X2,X3)
+
+      X2X1 = multiplier_deux_cbinds(X1,X2)
       
-      X2X1 = c()
-      for (i in 1:length(X2)) {
-        X2X1 = c(X2X1, X2[i,1]*X1[i,1])
-      }
-      X2X1 = cbind(X2X1)
-      
-      X1X3 = c()
-      for (i in 1:length(X2)) {
-        X1X3 = c(X1X3, X1[i,1]*X3[i,1])
-      }
-      X1X3 = cbind(X1X3)
+      X1X3 = multiplier_deux_cbinds(X1,X3)
       
       reg = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
       modselect=stepAIC(reg,~.,trace=FALSE,
                         direction=c("both")) 
-      regresseurs = modselect$terms
-      moyenne_residus = mean((predict(modselect)-y_test)**2)
+      prediction = (predict(modselect)-y_test)**2
+      distance_L2 = mean(prediction)
+      distance_L1 = max(prediction)
       coefficient_determination = summary(modselect)$r.squared 
+      ### Sélection selon R2
       if (coefficient_determination > max_r_squared) {
         regression_meilleure = modselect
         max_r_squared <- coefficient_determination
       }
-      if (moyenne_residus < min_mean){
-        reg_min = modselect
-        min_mean = moyenne_residus
+      if (distance_L2 < L2){
+        regression_L2 = modselect
+        L2 = distance_L2
+        regresseurs_L2 = c(x1,x2,x3)
       }
-      cd  = c(cd,coefficient_determination)
+      if (distance_L1 < L1){
+        regression_L1 = modselect
+        L1 = distance_L1
+        regresseurs_L1 = c(x1,x2,x3)
+      }
     }
     
   }}
 cd = sort(cd,decreasing = TRUE)
-hist(cd)
-for (i in regresseurs){
+### hist(cd)
+print(L2)
+for (i in regresseurs_L1){
+  print(colonnes_modified[i])
+}
+for (i in regresseurs_L2){
   print(colonnes_modified[i])
 }
 
+essai = lad(regression_L2, method = 'BR')
 
 
-"""
-essai_AIC = step(object = lm(y_test ~., 
-                                 data = test_data_modified), 
-                     direction='backward', 
-                     scope=list(upper= ~ ., lower=~1),
-                     k = 2)
-    
-essai_BIC = step(object = lm(y_test ~., 
-                             data = test_data_modified), 
-                 direction='backward', 
-                 scope=list(upper= ~ ., lower=~1),
-                 k = log(40))
-"""
+reg1 = ols(y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3)
+
+
+
+
+
+
+
+
+
+
