@@ -9,6 +9,7 @@ exit <- function() {
 library(pls)
 library(prospectr)
 library(MASS)
+library(L1pack)
 
 multiplier_deux_cbinds <- function(X,Y)
 {result = c()
@@ -19,7 +20,7 @@ result = cbind(result)
 return(result)
 }
 
-
+outliers = c(17, 9, 12)
 
 train_data = read.table("data_groupe9.csv", header=TRUE,sep = ";")
 test_data =  read.table("essai.csv", header=TRUE,sep = ";")
@@ -142,11 +143,15 @@ if (length(liste_indice_a_enlever_etape_2) > 0){
   if (length(liste_indice_a_enlever_etape_3) > 0){
     train_data_modified = train_data_modified[ , - liste_indice_a_enlever_etape_3]
     test_data_modified = test_data_modified[ , - liste_indice_a_enlever_etape_3]
+    test_data_modified = test_data_modified[- outliers,]
+    y_test = y_test[-outliers,]
     colonnes_modified = colnames(test_data_modified)
     stepall_modified = length(colonnes_modified)
   } else {
     train_data_modified = train_data_modified
     test_data_modified = test_data_modified
+    test_data_modified = test_data_modified[- outliers,]
+    y_test = y_test[-outliers,]
     colonnes_modified = colnames(test_data_modified)
     stepall_modified = length(colonnes_modified)
   }
@@ -173,7 +178,7 @@ for (x1 in 1:(stepall_modified-2)){
       
       reg = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
       modselect=stepAIC(reg,~.,trace=FALSE,
-                        direction=c("both")) 
+                        direction=c("backward")) 
       prediction = (predict(modselect)-y_test)**2
       distance_L2 = mean(prediction)
       distance_L1 = max(prediction)
@@ -212,11 +217,13 @@ essai = lad(regression_L2, method = 'BR')
 reg1 = ols(y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3)
 
 
+step
 
 
+prediction = (predict(regression_L2)-y_test)**2
 
 
+### suscpicion d'outliers 
+### outliers = c(17, 9, 12)
 
-
-
-
+### http://egallic.fr/l3-eco-gestion-regression-lineaire-avec-r-selection-de-modele/
