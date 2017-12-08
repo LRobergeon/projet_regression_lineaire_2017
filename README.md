@@ -19,3 +19,28 @@ Lors de L'étude que nous avons mené, il nous a été proposé d'expliquer une 
 Ainsi notre travail a été tout d'abord de réduire le nombre de _descripteurs_ utilisés, afin de gagner en clarté, puis d'expliquer la _réponse_ avec les _descripteurs_ choisis.
 
 ## Travail préalable sur les _descripteurs_
+### Explication des _descripteurs_ entre eux
+Une des premières idées qui vient à l'esprit pour réduire le nombre de _descripteurs_ est d'essayer d'expliquer des _descripteurs_ avec d'autre. En effet si un descripteur $d_{1}$ est expliqué par un descripteur $d_2$, alors il est inutile de décrire la _réponse_ $y$ avec $d_1$ et $d_2$, un seul suffit.
+
+_**Remarque1**: si $d_1$ explique linéairement $d_2$, alors l'inverse est vrai_
+
+Afin de tirer parti de cette affirmation, nous avons travaillé sur un fichier recensant une centaine de mesures des _descripteurs_ (mais pas de la _réponse_).
+
+_**Remarque2**: l'existence d'un tel fichier est totalement logique. Il nous ai demandé d'expliquer $y$ en utilisant $d_1, d_2, ... ,d_n$. Il y a donc une pluvalue à savoir prédire $y$. Ainsi $y$ peut être couteux ou difficile à mesurer. On essaie donc d'utiliser des descripteurs, simple à mesurer. Ainsi il est sensé d'avoir un tel fichier._
+
+#### Premier passage sur les descripteurs
+Pour commencer, nous avons essayer de déceler les relations directes entre les descripteurs, c'est à dire que nous avons cherché à modéliser les relations linéaires entre chaque paire
+$$d_i = \alpha_0 + \alpha_1d_j + \epsilon_{ij} $$
+avec $1 \leq i<j \leq n$
+On ne considère que les $i < j$ conformément à la _**Remarque2**_.
+
+
+A quelques expressions près, il est toujours possible de réaliser une regression linéaire. Cependant, toutes les regressions ne sont pas significatives. Nous avons donc décider (en conformité avec l'énoncé du TP) de ne considérer comme intéréssantes que les régressions dont le coefficient de détermination $R^2$ est supérieur à $0.95$. Cette limite est arbitraire et pourrait être quesionnée.
+Lorsqu'une régression entre $d_i$ et $d_j$ est considérée come intéréssante, nous décidons d'enlever $d_i$ ( avec $i<j$ ) de nos descripteurs. 
+
+_**Remarque3:** si $d_i$ explique $d_j$ et $d_j$ explique $d_k$ alors $d_i$ explique $d_k$. Donc la relation _explique_ est une relation d'équivalence.
+
+
+
+
+
