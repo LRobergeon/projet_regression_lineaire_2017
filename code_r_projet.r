@@ -141,7 +141,7 @@ if (length(liste_indice_a_enlever_etape_2) > 0){
     }
   }
   
-  
+  PRESS_min = 100000000000
   
   if (length(liste_indice_a_enlever_etape_3) > 0){
     train_data_modified = train_data_modified[ , - liste_indice_a_enlever_etape_3]
@@ -184,7 +184,13 @@ for (x1 in 1:(stepall_modified-2)){
       AIC=step(null, scope=list(lower=null, upper=full), direction="forward",k=2, trace = FALSE)
       BIC=step(null, scope=list(lower=null, upper=full), direction="forward", k = log(40), trace = FALSE)
       
-      
+      PRESS_actuel = max(PRESS(AIC)$P.square, PRESS(BIC)$P.square)
+
+      if (PRESS_actuel < PRESS_min){
+        PRESS_min <- PRESS_actuel
+        regression_choisie_AIC <- AIC
+        regression_choisie_BIC <- BIC
+      }
       
       modselect=stepAIC(reg,~.,trace=FALSE,
                         direction=c("backward")) 
@@ -220,41 +226,7 @@ for (i in regresseurs_L2){
   print(colonnes_modified[i])
 }
 
-essai = lad(regression_L2, method = 'BR')
 
-null=lm(y_test~1,data=test_data_modified)
-full=lm(y_test~.,data=test_data_modified)
-
-AIC=step(null, scope=list(lower=null, upper=full), direction="forward",k=2)
-BIC=step(null, scope=list(lower=null, upper=full), direction="forward", k = log(40))
-
-test_data2 =  read.table("essai.csv", header=TRUE,sep = ";")
-modele_AIC=lm(formula = reponse ~ descripteur1 + descripteur14 + descripteur71 + descripteur35 + descripteur23,data=test_data2)
-resAIC <- PRESS(modele_AIC)
-barplot(resAIC$residuals)
-
-modele_BIC=lm(formula = reponse ~ descripteur1 + descripteur14 + descripteur71 + descripteur35,data=test_data2)
-resBIC <- PRESS(modele_BIC)
-barplot(resBICresiduals)
-
-
-if (resAIC$P.square>resBIC$P.square){
-  model=modele_AIC
-  meilleur_model="AIC"
-} else{
-  model=modele_BIC
-  meilleur_model="BIC"
-}
-
-
-
-reg1 = ols(y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3)
-
-
-step
-
-
-prediction = (predict(regression_L2)-y_test)**2
 
 
 ### suscpicion d'outliers 
