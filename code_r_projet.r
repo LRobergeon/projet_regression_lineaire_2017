@@ -266,35 +266,35 @@ prediction = (predict(regression_L2)-y_test)**2
 
 
 
-null=lm(y_test~1,data=test_data_modified)
-full=lm(y_test~.,data=test_data_modified)
-
-AIC=step(null, scope=list(lower=null, upper=full), direction="forward",k=2)
-BIC=step(null, scope=list(lower=null, upper=full), direction="forward", k = log(40))
-
-test_data2 =  read.table("essai.csv", header=TRUE,sep = ";")
-modele_AIC=lm(formula = reponse ~ descripteur1 + descripteur14 + descripteur71 + descripteur35 + descripteur23,data=test_data2)
-resAIC <- PRESS(modele_AIC)
-barplot(resAIC$residuals)
-
-modele_BIC=lm(formula = reponse ~ descripteur1 + descripteur14 + descripteur71 + descripteur35,data=test_data2)
-resBIC <- PRESS(modele_BIC)
-barplot(resBICresiduals)
-
-
-if (resAIC$P.square>resBIC$P.square){
-  model=modele_AIC
-  meilleur_model="AIC"
-} else{
-  model=modele_BIC
-  meilleur_model="BIC"
-}
-
-
-library(L1pack)
-test_data_modified
-
-
-x=test_data2[,3:5]
-y=test_data2$reponse
-l1fit(x, y, intercept = TRUE, tolerance = 1e-07, print.it = TRUE)
+###null=lm(y_test~1,data=test_data_modified)
+# full=lm(y_test~.,data=test_data_modified)
+# 
+# AIC=step(null, scope=list(lower=null, upper=full), direction="forward",k=2)
+# BIC=step(null, scope=list(lower=null, upper=full), direction="forward", k = log(40))
+# 
+# test_data2 =  read.table("essai.csv", header=TRUE,sep = ";")
+# modele_AIC=lm(formula = reponse ~ descripteur1 + descripteur14 + descripteur71 + descripteur35 + descripteur23,data=test_data2)
+# resAIC <- PRESS(modele_AIC)
+# barplot(resAIC$residuals)
+# 
+# modele_BIC=lm(formula = reponse ~ descripteur1 + descripteur14 + descripteur71 + descripteur35,data=test_data2)
+# resBIC <- PRESS(modele_BIC)
+# barplot(resBICresiduals)
+# 
+# 
+# if (resAIC$P.square>resBIC$P.square){
+#   model=modele_AIC
+#   meilleur_model="AIC"
+# } else{
+#   model=modele_BIC
+#   meilleur_model="BIC"
+# }
+# 
+# 
+# library(L1pack)
+# test_data_modified
+# 
+# 
+# x=test_data2[,3:5]
+# y=test_data2$reponse
+# l1fit(x, y, intercept = TRUE, tolerance = 1e-07, print.it = TRUE)
