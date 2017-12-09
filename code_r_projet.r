@@ -1,5 +1,5 @@
-##setwd("~/Desktop/M2 DS/reg_lin/projet_regression_lineaire_2017")
-setwd("C:/Users/tangu/Documents/GitHub/projet_regression_lineaire_2017")
+setwd("~/Desktop/M2 DS/reg_lin/projet_regression_lineaire_2017")
+##setwd("C:/Users/tangu/Documents/GitHub/projet_regression_lineaire_2017")
 # nettoyage environnement
 rm (list=ls())
 ## blabla
@@ -12,7 +12,7 @@ library(pls)
 library(prospectr)
 library(MASS)
 library(L1pack)
-
+library(qpcR)
 multiplier_deux_cbinds <- function(X,Y)
 {result = c()
 for (i in 1:length(X)) {
@@ -161,6 +161,7 @@ if (length(liste_indice_a_enlever_etape_2) > 0){
   
   
 ### L2
+<<<<<<< HEAD
 # cd = c()
 # max_r_squared = 0
 # regresseurs_L2 = c(1,2,3)
@@ -257,6 +258,104 @@ if (length(liste_indice_a_enlever_etape_2) > 0){
 # 
 # 
 # prediction = (predict(regression_L2)-y_test)**2
+=======
+cd = c()
+max_r_squared = 0
+regresseurs_L2 = c(1,2,3)
+L2 = 1000000000000
+L1 = 1000000000000
+for (x1 in 1:(stepall_modified-2)){
+  for (x2 in (x1+1):(stepall_modified-1)){
+    for (x3 in (x2+1):stepall_modified){
+      X1 = cbind(test_data_modified[,x1])
+      X2 = cbind(test_data_modified[,x2])
+      X3 = cbind(test_data_modified[,x3])
+      
+      X2X3 = multiplier_deux_cbinds(X2,X3)
+
+      X2X1 = multiplier_deux_cbinds(X1,X2)
+      
+      X1X3 = multiplier_deux_cbinds(X1,X3)
+      
+      
+      
+      null=lm(y_test~1)
+      full = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
+      AIC=step(null, scope=list(lower=null, upper=full), direction="forward",k=2, trace = FALSE)
+      BIC=step(null, scope=list(lower=null, upper=full), direction="forward", k = log(40), trace = FALSE)
+      
+      
+      
+      modselect=stepAIC(reg,~.,trace=FALSE,
+                        direction=c("backward")) 
+      prediction = (predict(modselect)-y_test)**2
+      distance_L2 = mean(prediction)
+      distance_L1 = max(prediction)
+      coefficient_determination = summary(modselect)$r.squared 
+      ### Sélection selon R2
+      if (coefficient_determination > max_r_squared) {
+        regression_meilleure = modselect
+        max_r_squared <- coefficient_determination
+      }
+      if (distance_L2 < L2){
+        regression_L2 = modselect
+        L2 = distance_L2
+        regresseurs_L2 = c(x1,x2,x3)
+      }
+      if (distance_L1 < L1){
+        regression_L1 = modselect
+        L1 = distance_L1
+        regresseurs_L1 = c(x1,x2,x3)
+      }
+    }
+    
+  }}
+cd = sort(cd,decreasing = TRUE)
+### hist(cd)
+print(L2)
+for (i in regresseurs_L1){
+  print(colonnes_modified[i])
+}
+for (i in regresseurs_L2){
+  print(colonnes_modified[i])
+}
+
+essai = lad(regression_L2, method = 'BR')
+
+null=lm(y_test~1,data=test_data_modified)
+full=lm(y_test~.,data=test_data_modified)
+
+AIC=step(null, scope=list(lower=null, upper=full), direction="forward",k=2)
+BIC=step(null, scope=list(lower=null, upper=full), direction="forward", k = log(40))
+
+test_data2 =  read.table("essai.csv", header=TRUE,sep = ";")
+modele_AIC=lm(formula = reponse ~ descripteur1 + descripteur14 + descripteur71 + descripteur35 + descripteur23,data=test_data2)
+resAIC <- PRESS(modele_AIC)
+barplot(resAIC$residuals)
+
+modele_BIC=lm(formula = reponse ~ descripteur1 + descripteur14 + descripteur71 + descripteur35,data=test_data2)
+resBIC <- PRESS(modele_BIC)
+barplot(resBICresiduals)
+
+
+if (resAIC$P.square>resBIC$P.square){
+  model=modele_AIC
+  meilleur_model="AIC"
+} else{
+  model=modele_BIC
+  meilleur_model="BIC"
+}
+
+
+
+reg1 = ols(y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3)
+
+
+step
+
+
+prediction = (predict(regression_L2)-y_test)**2
+>>>>>>> ce13475a4d24e3458e3f2ec82fc929ca9e2d1486
 
 
 ### suscpicion d'outliers 
