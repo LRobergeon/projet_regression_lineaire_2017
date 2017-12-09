@@ -22,9 +22,9 @@ result = cbind(result)
 return(result)
 }
 
-outliers = c(17, 9, 12)
+outliers = c(17, 9)
 
-train_data = read.table("data_groupe9.csv", header=TRUE,sep = ";")
+train_data = read.table("data_groupe9.csv", header=TRUE,sep = ",")
 test_data =  read.table("essai.csv", header=TRUE,sep = ";")
 y_test = cbind(test_data[,2])
 test_data = test_data[, - c(1,2)]
@@ -33,6 +33,7 @@ colonnes = colnames(train_data)
 colonnes_train = colnames(test_data)
 stepall = length(colonnes)
 
+boxplot(train_data_modified)
 
 cd = c()
 pred_ok = c()
