@@ -141,7 +141,7 @@ if (length(liste_indice_a_enlever_etape_2) > 0){
     }
   }
   
-  PRESS_min = 100000000000
+ 
   
   if (length(liste_indice_a_enlever_etape_3) > 0){
     train_data_modified = train_data_modified[ , - liste_indice_a_enlever_etape_3]
@@ -163,6 +163,7 @@ cd = c()
 max_r_squared = 0
 regresseurs_L2 = c(1,2,3)
 L2 = 1000000000000
+PRESS_min = 100000000000
 L1 = 1000000000000
 for (x1 in 1:(stepall_modified-2)){
   for (x2 in (x1+1):(stepall_modified-1)){
@@ -183,48 +184,19 @@ for (x1 in 1:(stepall_modified-2)){
       full = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
       AIC=step(null, scope=list(lower=null, upper=full), direction="forward",k=2, trace = FALSE)
       BIC=step(null, scope=list(lower=null, upper=full), direction="forward", k = log(40), trace = FALSE)
-      
-      PRESS_actuel = max(PRESS(AIC)$P.square, PRESS(BIC)$P.square)
-
+      PRESS_actuel = max(PRESS(AIC,verbose=FALSE)$P.square, PRESS(BIC,verbose=FALSE)$P.square,trace=FALSE)
       if (PRESS_actuel < PRESS_min){
         PRESS_min <- PRESS_actuel
         regression_choisie_AIC <- AIC
         regression_choisie_BIC <- BIC
+        regresseur=c(x1,x2,x3)
+        
       }
       
-      modselect=stepAIC(reg,~.,trace=FALSE,
-                        direction=c("backward")) 
-      prediction = (predict(modselect)-y_test)**2
-      distance_L2 = mean(prediction)
-      distance_L1 = max(prediction)
-      coefficient_determination = summary(modselect)$r.squared 
-      ### Sélection selon R2
-      if (coefficient_determination > max_r_squared) {
-        regression_meilleure = modselect
-        max_r_squared <- coefficient_determination
-      }
-      if (distance_L2 < L2){
-        regression_L2 = modselect
-        L2 = distance_L2
-        regresseurs_L2 = c(x1,x2,x3)
-      }
-      if (distance_L1 < L1){
-        regression_L1 = modselect
-        L1 = distance_L1
-        regresseurs_L1 = c(x1,x2,x3)
-      }
     }
     
   }}
-cd = sort(cd,decreasing = TRUE)
-### hist(cd)
-print(L2)
-for (i in regresseurs_L1){
-  print(colonnes_modified[i])
-}
-for (i in regresseurs_L2){
-  print(colonnes_modified[i])
-}
+
 
 
 
