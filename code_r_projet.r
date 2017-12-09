@@ -182,8 +182,8 @@ for (x1 in 1:(stepall_modified-2)){
       
       null=lm(y_test~1)
       full = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
-      AIC=step(null, scope=list(lower=null, upper=full), direction="forward",k=2, trace = FALSE)
-      BIC=step(null, scope=list(lower=null, upper=full), direction="forward", k = log(40), trace = FALSE)
+      AIC=step(null, scope=list(lower=null, upper=full), direction="backward",k=2, trace = FALSE)
+      BIC=step(null, scope=list(lower=null, upper=full), direction="backward", k = log(40), trace = FALSE)
       if(length(AIC$coefficients)!=1 && length(BIC$coefficients)!=1){
         PRESS_actuel = PRESS(AIC,verbose=FALSE)$P.square
         if (PRESS_actuel < PRESS_min){
@@ -202,7 +202,9 @@ plot(y_test,predict(regression_choisie_AIC))
 y_predit=predict(regression_choisie_AIC)
 colonnes_modified[regresseur]
 
-
+library(L1pack)
+lad(formula=full, method = "BR", subset, model = TRUE, x = FALSE, y = FALSE, contrasts = NULL)
+l1fit(cbind(X1,X2,X3,X1X3,X2X1,X2X3), y_test, intercept = TRUE, tolerance = 1e-07, print.it = TRUE)
 
 ### suscpicion d'outliers 
 ### outliers = c(17, 9, 12)
