@@ -184,13 +184,15 @@ for (x1 in 1:(stepall_modified-2)){
       full = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
       AIC=step(null, scope=list(lower=null, upper=full), direction="forward",k=2, trace = FALSE)
       BIC=step(null, scope=list(lower=null, upper=full), direction="forward", k = log(40), trace = FALSE)
-      PRESS_actuel = max(PRESS(AIC,verbose=FALSE)$P.square, PRESS(BIC,verbose=FALSE)$P.square,trace=FALSE)
-      if (PRESS_actuel < PRESS_min){
-        PRESS_min <- PRESS_actuel
-        regression_choisie_AIC <- AIC
-        regression_choisie_BIC <- BIC
-        regresseur=c(x1,x2,x3)
-        
+      if(length(AIC$coefficients)!=1 && length(BIC$coefficients)!=1){
+        PRESS_actuel = max(PRESS(AIC,verbose=FALSE)$P.square, PRESS(BIC,verbose=FALSE)$P.square,trace=FALSE)
+        if (PRESS_actuel < PRESS_min){
+          PRESS_min <- PRESS_actuel
+          regression_choisie_AIC <- AIC
+          regression_choisie_BIC <- BIC
+          regresseur=c(x1,x2,x3)
+        }
+      
       }
       
     }
