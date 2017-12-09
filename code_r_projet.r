@@ -1,5 +1,5 @@
-##setwd("~/Desktop/M2 DS/reg_lin/projet_regression_lineaire_2017")
-setwd("C:/Users/tangu/Documents/GitHub/projet_regression_lineaire_2017")
+setwd("~/Desktop/M2 DS/reg_lin/projet_regression_lineaire_2017")
+##setwd("C:/Users/tangu/Documents/GitHub/projet_regression_lineaire_2017")
 # nettoyage environnement
 rm (list=ls())
 ## blabla
@@ -12,7 +12,7 @@ library(pls)
 library(prospectr)
 library(MASS)
 library(L1pack)
-
+library(qpcR)
 multiplier_deux_cbinds <- function(X,Y)
 {result = c()
 for (i in 1:length(X)) {
@@ -182,8 +182,8 @@ for (x1 in 1:(stepall_modified-2)){
       
       null=lm(y_test~1)
       full = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
-      AIC=step(null, scope=list(lower=null, upper=full), direction="forward",k=2)
-      BIC=step(null, scope=list(lower=null, upper=full), direction="forward", k = log(40))
+      AIC=step(null, scope=list(lower=null, upper=full), direction="forward",k=2, trace = FALSE)
+      BIC=step(null, scope=list(lower=null, upper=full), direction="forward", k = log(40), trace = FALSE)
       
       
       
