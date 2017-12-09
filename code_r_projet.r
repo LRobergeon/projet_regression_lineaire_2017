@@ -185,7 +185,7 @@ for (x1 in 1:(stepall_modified-2)){
       AIC=step(null, scope=list(lower=null, upper=full), direction="forward",k=2, trace = FALSE)
       BIC=step(null, scope=list(lower=null, upper=full), direction="forward", k = log(40), trace = FALSE)
       if(length(AIC$coefficients)!=1 && length(BIC$coefficients)!=1){
-        PRESS_actuel = max(PRESS(AIC,verbose=FALSE)$P.square, PRESS(BIC,verbose=FALSE)$P.square,trace=FALSE)
+        PRESS_actuel = PRESS(AIC,verbose=FALSE)$P.square
         if (PRESS_actuel < PRESS_min){
           PRESS_min <- PRESS_actuel
           regression_choisie_AIC <- AIC
@@ -198,8 +198,9 @@ for (x1 in 1:(stepall_modified-2)){
     }
     
   }}
-
-
+plot(y_test,predict(regression_choisie_AIC))
+y_predit=predict(regression_choisie_AIC)
+colonnes_modified[regresseur]
 
 
 
