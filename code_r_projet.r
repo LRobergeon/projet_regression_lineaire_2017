@@ -1,4 +1,4 @@
-## setwd("~/Desktop/M2 DS/reg_lin/projet_regression_lineaire_2017")
+setwd("~/Desktop/M2 DS/reg_lin/projet_regression_lineaire_2017")
 # nettoyage environnement
 rm (list=ls())
 ## blabla
@@ -177,7 +177,15 @@ for (x1 in 1:(stepall_modified-2)){
       
       X1X3 = multiplier_deux_cbinds(X1,X3)
       
-      reg = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
+      
+      
+      null=lm(y_test~1)
+      full = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
+      AIC=step(null, scope=list(lower=null, upper=full), direction="forward",k=2)
+      BIC=step(null, scope=list(lower=null, upper=full), direction="forward", k = log(40))
+      
+      
+      
       modselect=stepAIC(reg,~.,trace=FALSE,
                         direction=c("backward")) 
       prediction = (predict(modselect)-y_test)**2
