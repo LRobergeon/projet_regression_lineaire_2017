@@ -1,7 +1,7 @@
-setwd("~/Desktop/M2 DS/reg_lin/projet_regression_lineaire_2017")
+﻿setwd("~/Desktop/M2 DS/reg_lin/projet_regression_lineaire_2017")
 # nettoyage environnement
 rm (list=ls())
-
+## blabla
 exit <- function() {
   .Internal(.invokeRestart(list(NULL, NULL), NULL))
 }
