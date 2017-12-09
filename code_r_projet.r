@@ -2,6 +2,7 @@
 # nettoyage environnement
 rm (list=ls())
 ## blabla
+## hello world
 exit <- function() {
   .Internal(.invokeRestart(list(NULL, NULL), NULL))
 }
