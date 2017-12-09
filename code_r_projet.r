@@ -1,4 +1,4 @@
-﻿setwd("~/Desktop/M2 DS/reg_lin/projet_regression_lineaire_2017")
+## setwd("~/Desktop/M2 DS/reg_lin/projet_regression_lineaire_2017")
 # nettoyage environnement
 rm (list=ls())
 ## blabla
@@ -213,6 +213,14 @@ for (i in regresseurs_L2){
 }
 
 essai = lad(regression_L2, method = 'BR')
+
+
+
+
+
+
+
+
 
 null=lm(y_test~1,data=test_data_modified)
 full=lm(y_test~.,data=test_data_modified)
