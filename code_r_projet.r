@@ -172,24 +172,25 @@ for (x1 in 1:(stepall_modified-2)){
       X2 = cbind(test_data_modified[,x2])
       X3 = cbind(test_data_modified[,x3])
       
-      X2X3 = multiplier_deux_cbinds(X2,X3)
-
-      X2X1 = multiplier_deux_cbinds(X1,X2)
-      
-      X1X3 = multiplier_deux_cbinds(X1,X3)
+      # X2X3 = multiplier_deux_cbinds(X2,X3)
+      # 
+      # X2X1 = multiplier_deux_cbinds(X1,X2)
+      # 
+      # X1X3 = multiplier_deux_cbinds(X1,X3)
       
       
       
       null=lm(y_test~1)
-      full = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
-      AIC=step(null, scope=list(lower=null, upper=full), direction="backward",k=2, trace = FALSE)
-      BIC=step(null, scope=list(lower=null, upper=full), direction="backward", k = log(40), trace = FALSE)
-      if(length(AIC$coefficients)!=1 && length(BIC$coefficients)!=1){
+      #full = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
+      full = lm( y_test ~ X1 + X2 + X3 + X1*X2 + X2*X3 + X1*X3 )
+      AIC=step(null, scope=list(lower=null, upper=full), direction="forward",k=2, trace = FALSE)
+      #BIC=step(null, scope=list(lower=null, upper=full), direction="forward", k = log(40), trace = FALSE)
+      if(length(AIC$coefficients)!=1){ #} && length(BIC$coefficients)!=1){
         PRESS_actuel = PRESS(AIC,verbose=FALSE)$P.square
         if (PRESS_actuel < PRESS_min){
           PRESS_min <- PRESS_actuel
           regression_choisie_AIC <- AIC
-          regression_choisie_BIC <- BIC
+          # regression_choisie_BIC <- BIC
           regresseur=c(x1,x2,x3)
         }
       
