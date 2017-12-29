@@ -1,5 +1,5 @@
-##setwd("~/Desktop/M2 DS/reg_lin/projet_regression_lineaire_2017")
-setwd("C:/Users/tangu/Documents/GitHub/projet_regression_lineaire_2017")
+setwd("~/Desktop/M2 DS/reg_lin/projet_regression_lineaire_2017")
+##setwd("C:/Users/tangu/Documents/GitHub/projet_regression_lineaire_2017")
 # nettoyage environnement
 rm (list=ls())
 ## blabla
@@ -55,8 +55,13 @@ for (x1 in 1:(stepall-1)){
     cd  = c(cd,coefficient_determination)
     
     if (coefficient_determination > 0.95) {
+      
       pred_ok = c(pred_ok,c(colonnes[x1],colonnes[x2]))
       if ( !(x1 %in% liste_indice_a_enlever_etape_1)){
+        print(colonnes[x1])
+        print(colonnes[x2])
+        print(coefficient_determination)
+        print('')
         liste_indice_a_enlever_etape_1 = c(liste_indice_a_enlever_etape_1, x1)
       }
     }
@@ -65,6 +70,7 @@ for (x1 in 1:(stepall-1)){
 
 
 if (length(liste_indice_a_enlever_etape_1) > 0){
+  print(colnames(train_data[, liste_indice_a_enlever_etape_1]))
   train_data_modified = train_data[ , - liste_indice_a_enlever_etape_1]
   test_data_modified = test_data[ , - liste_indice_a_enlever_etape_1]
   colonnes_modified = colnames(test_data_modified)
