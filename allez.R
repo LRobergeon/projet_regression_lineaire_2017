@@ -14,6 +14,8 @@ library(MASS)
 library(L1pack)
 library(qpcR)
 library(MPV)
+
+
 multiplier_deux_cbinds <- function(X,Y)
 {result = c()
 for (i in 1:length(X)) {
@@ -115,63 +117,63 @@ if (length(liste_indice_a_enlever_etape_2) > 0){
   test_data_modified = test_data_modified[ , - liste_indice_a_enlever_etape_2]
   colonnes_modified = colnames(test_data_modified)
   stepall_modified = length(colonnes_modified)
-  } else {
+} else {
   train_data_modified = train_data_modified
   test_data_modified = test_data_modified
   colonnes_modified = colnames(test_data_modified)
   stepall_modified = length(colonnes_modified)
-  }
-  ### ETAPE 3
-  liste_indice_a_enlever_etape_3 = c()
-  for (x1 in 1:(stepall_modified-3)){
-    for (x2 in (x1+1):(stepall_modified-2)){
-      for (x3 in (x2+1):stepall_modified-1){
-        for (x4 in (x3+1):stepall_modified){
-          ## print(train_data[colonne1])
-          X1 = cbind(train_data_modified[,x1])
-          X2 = cbind(train_data_modified[,x2])
-          X3 = cbind(train_data_modified[,x3])
-          X4 = cbind(train_data_modified[,x4])
-          
-          reg = lm(X1~X2 + X3 + X4)
-          coefficient_determination = summary(reg)$r.squared 
-          cd  = c(cd,coefficient_determination)
-          
-          if (coefficient_determination > 0.95) {
-            pred_ok = c(pred_ok,c(colonnes[x1],colonnes[x2],colonnes[x3]))
-            if ( !(x1 %in% liste_indice_a_enlever_etape_3)){
-              liste_indice_a_enlever_etape_3 = c(liste_indice_a_enlever_etape_3, x1)
-            }
+}
+### ETAPE 3
+liste_indice_a_enlever_etape_3 = c()
+for (x1 in 1:(stepall_modified-3)){
+  for (x2 in (x1+1):(stepall_modified-2)){
+    for (x3 in (x2+1):stepall_modified-1){
+      for (x4 in (x3+1):stepall_modified){
+        ## print(train_data[colonne1])
+        X1 = cbind(train_data_modified[,x1])
+        X2 = cbind(train_data_modified[,x2])
+        X3 = cbind(train_data_modified[,x3])
+        X4 = cbind(train_data_modified[,x4])
+        
+        reg = lm(X1~X2 + X3 + X4)
+        coefficient_determination = summary(reg)$r.squared 
+        cd  = c(cd,coefficient_determination)
+        
+        if (coefficient_determination > 0.95) {
+          pred_ok = c(pred_ok,c(colonnes[x1],colonnes[x2],colonnes[x3]))
+          if ( !(x1 %in% liste_indice_a_enlever_etape_3)){
+            liste_indice_a_enlever_etape_3 = c(liste_indice_a_enlever_etape_3, x1)
           }
         }
       }
     }
   }
-  
- 
-  
-  if (length(liste_indice_a_enlever_etape_3) > 0){
-    train_data_modified = train_data_modified[ , - liste_indice_a_enlever_etape_3]
-    test_data_modified = test_data_modified[ , - liste_indice_a_enlever_etape_3]
-    #test_data_modified = test_data_modified[- outliers,]
-    #y_test = y_test[-outliers,]
-    colonnes_modified = colnames(test_data_modified)
-    stepall_modified = length(colonnes_modified)
-  } else {
-    train_data_modified = train_data_modified
-    test_data_modified = test_data_modified
-    #test_data_modified = test_data_modified[- outliers,]
-    #y_test = y_test[-outliers,]
-    colonnes_modified = colnames(test_data_modified)
-    stepall_modified = length(colonnes_modified)
-  }
+}
+
+
+
+if (length(liste_indice_a_enlever_etape_3) > 0){
+  train_data_modified = train_data_modified[ , - liste_indice_a_enlever_etape_3]
+  test_data_modified = test_data_modified[ , - liste_indice_a_enlever_etape_3]
+  #test_data_modified = test_data_modified[- outliers,]
+  #y_test = y_test[-outliers,]
+  colonnes_modified = colnames(test_data_modified)
+  stepall_modified = length(colonnes_modified)
+} else {
+  train_data_modified = train_data_modified
+  test_data_modified = test_data_modified
+  #test_data_modified = test_data_modified[- outliers,]
+  #y_test = y_test[-outliers,]
+  colonnes_modified = colnames(test_data_modified)
+  stepall_modified = length(colonnes_modified)
+}
 
 cd = c()
 max_r_squared = 0
 regresseurs_L2 = c(1,2,3)
 L2 = 1000000000000
 PRESS_min = 100000000000
-L1 = - 1000000000000
+L1 = 1000000000000
 for (x1 in 1:(stepall_modified-2)){
   for (x2 in (x1+1):(stepall_modified-1)){
     for (x3 in (x2+1):stepall_modified){
@@ -180,7 +182,7 @@ for (x1 in 1:(stepall_modified-2)){
       X3 = cbind(test_data_modified[,x3])
       
       X2X3 = multiplier_deux_cbinds(X2,X3)
-
+      
       X2X1 = multiplier_deux_cbinds(X1,X2)
       
       X1X3 = multiplier_deux_cbinds(X1,X3)
@@ -190,7 +192,7 @@ for (x1 in 1:(stepall_modified-2)){
       null=lm(y_test~1)
       full = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
       AIC=step(null, scope=list(lower=null, upper=full), direction="both",k=2, trace = FALSE)
-      BIC=step(null, scope=list(lower=null, upper=full), direction="both", k = log(40), trace = FALSE)
+      #BIC=step(null, scope=list(lower=null, upper=full), direction="backward", k = log(40), trace = FALSE)
       if(length(AIC$coefficients)!=1){
         PRESS_actuel = PRESS(AIC)
         if (PRESS_actuel < PRESS_min){
@@ -199,18 +201,8 @@ for (x1 in 1:(stepall_modified-2)){
           regression_choisie_BIC <- BIC
           regresseur=c(x1,x2,x3)
         }
-      
+        
       }
-      regresion_l1 = lad(full)
-      logLikood = regresion_l1$logLik
-      if (logLikood > L1){
-        L1 <- logLikood
-        regresion_choisie_l1 <- regresion_l1
-        regresseurs_L1 = c(x1, x2, x3)
-      }
-      loss_reg_l1=sum(regresion_choisie_l1$coefficients)
-      
-      
       
     }
     
@@ -263,26 +255,3 @@ l1fit(cbind(X1,X2,X3,X1X3,X2X1,X2X3), y_test, intercept = TRUE, tolerance = 1e-0
 # x=test_data2[,3:5]
 # y=test_data2$reponse
 # l1fit(x, y, intercept = TRUE, tolerance = 1e-07, print.it = TRUE)
-
-
-
-null=lad(y_test~1)
-full = lad( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
-
-
-
-
-PRESSit <- function(linear.model) {
-  #' calculate the predictive residuals
-  pr <- residuals(linear.model)/(1-lm.influence(linear.model)$hat)
-  #' calculate the PRESS
-  PRESS <- sum(pr^2)
-  
-  return(PRESS)
-}
-
-
-
-
-
-lado = lad(full)
