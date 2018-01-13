@@ -1,5 +1,5 @@
-##setwd("~/Desktop/M2 DS/reg_lin/projet_regression_lineaire_2017")
-setwd("C:/Users/tangu/Documents/GitHub/projet_regression_lineaire_2017")
+setwd("~/Desktop/M2 DS/reg_lin/projet_regression_lineaire_2017")
+##setwd("C:/Users/tangu/Documents/GitHub/projet_regression_lineaire_2017")
 # nettoyage environnement
 rm (list=ls())
 ## blabla
@@ -13,6 +13,7 @@ library(prospectr)
 library(MASS)
 library(L1pack)
 library(qpcR)
+library(MPV)
 multiplier_deux_cbinds <- function(X,Y)
 {result = c()
 for (i in 1:length(X)) {
@@ -55,8 +56,13 @@ for (x1 in 1:(stepall-1)){
     cd  = c(cd,coefficient_determination)
     
     if (coefficient_determination > 0.95) {
+      
       pred_ok = c(pred_ok,c(colonnes[x1],colonnes[x2]))
       if ( !(x1 %in% liste_indice_a_enlever_etape_1)){
+        print(colonnes[x1])
+        print(colonnes[x2])
+        print(coefficient_determination)
+        print('')
         liste_indice_a_enlever_etape_1 = c(liste_indice_a_enlever_etape_1, x1)
       }
     }
@@ -65,6 +71,7 @@ for (x1 in 1:(stepall-1)){
 
 
 if (length(liste_indice_a_enlever_etape_1) > 0){
+  print(colnames(train_data[, liste_indice_a_enlever_etape_1]))
   train_data_modified = train_data[ , - liste_indice_a_enlever_etape_1]
   test_data_modified = test_data[ , - liste_indice_a_enlever_etape_1]
   colonnes_modified = colnames(test_data_modified)
@@ -181,12 +188,20 @@ for (x1 in 1:(stepall_modified-2)){
       
       
       null=lm(y_test~1)
+<<<<<<< HEAD
       #full = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
       full = lm( y_test ~ X1 + X2 + X3 + X1*X2 + X2*X3 + X1*X3 )
       AIC=step(null, scope=list(lower=null, upper=full), direction="forward",k=2, trace = FALSE)
       #BIC=step(null, scope=list(lower=null, upper=full), direction="forward", k = log(40), trace = FALSE)
       if(length(AIC$coefficients)!=1){ #} && length(BIC$coefficients)!=1){
         PRESS_actuel = PRESS(AIC,verbose=FALSE)$P.square
+=======
+      full = lm( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
+      AIC=step(null, scope=list(lower=null, upper=full), direction="both",k=2, trace = FALSE)
+      BIC=step(null, scope=list(lower=null, upper=full), direction="backward", k = log(40), trace = FALSE)
+      if(length(AIC$coefficients)!=1){
+        PRESS_actuel = PRESS(AIC)
+>>>>>>> ec632313d85e3db650980c5bd93a5a318a742206
         if (PRESS_actuel < PRESS_min){
           PRESS_min <- PRESS_actuel
           regression_choisie_AIC <- AIC
@@ -247,3 +262,26 @@ l1fit(cbind(X1,X2,X3,X1X3,X2X1,X2X3), y_test, intercept = TRUE, tolerance = 1e-0
 # x=test_data2[,3:5]
 # y=test_data2$reponse
 # l1fit(x, y, intercept = TRUE, tolerance = 1e-07, print.it = TRUE)
+
+
+
+null=lad(y_test~1)
+full = lad( y_test ~ X1 + X2 + X3 + X2X1 + X1X3 + X2X3 )
+
+
+
+
+PRESSit <- function(linear.model) {
+  #' calculate the predictive residuals
+  pr <- residuals(linear.model)/(1-lm.influence(linear.model)$hat)
+  #' calculate the PRESS
+  PRESS <- sum(pr^2)
+  
+  return(PRESS)
+}
+
+
+
+
+
+lado = lad(full)

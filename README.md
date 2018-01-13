@@ -2,7 +2,7 @@
 
 # Projet de Regression Lineaire 2017-2018
 :::info
-Auteurs : **Tanguy DCDH, Paul PESEUX**
+Auteurs : **Tangui DE CREVOISIER, Paul PESEUX**
 Date : **07/12/2017**
 Cadre : [TP de Regression Linéaire], conçus par F. Wahl dans le cadre du cours de Regression Linéaire du Master Data Science à l'Université Lyon 1.
 :::
